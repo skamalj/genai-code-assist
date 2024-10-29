@@ -1,10 +1,9 @@
 import * as vscode from 'vscode';
 import { getModelHandle } from './modelProvider.js';
-const { explainCode } = require('./explainCode');
+import { explainCode } from './explainCode';
+import { reviewCode } from './reviewCode.js';
 import { extractKeyValuePairsAndCleanComment, processIncludedFiles, getCommentPatterns, identifyProgrammingLanguage, collectConsecutiveComments, extractQuestionFromMultiLine, findStartOfMultiLineComment } from './utils.js';
-
-// Global LLM model instance
-let llmModel;
+import { chatPromptGenerator, promptGenerator } from './promptBuilder.js';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -27,6 +26,9 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(explainCommand);
 
+    let reviewCommand = vscode.commands.registerCommand('copilotSupreme.reviewCode', reviewCode);
+    context.subscriptions.push(reviewCommand);
+
     // Listener for document changes
     vscode.workspace.onDidChangeTextDocument(async (event) => {
         const editor = vscode.window.activeTextEditor;
@@ -42,10 +44,6 @@ export function activate(context: vscode.ExtensionContext) {
                 return;
             }
             patterns = getCommentPatterns(languageId);
-
-            if (!llmModel) {
-                llmModel = getModelHandle();
-            }
         }
 
 
@@ -60,15 +58,11 @@ export function activate(context: vscode.ExtensionContext) {
             const { keyValuePairs, cleanedComment: cleanedQuestion } = extractKeyValuePairsAndCleanComment(question);
 
             const provider = keyValuePairs['provider'] as string;
-            const modelName = keyValuePairs['model'] as string;
             const includes = keyValuePairs['include'] as string[];
 
-            let modelHandle;
-            if (provider || modelName) {
-                modelHandle = getModelHandle(provider, modelName);
-            }
+            const { modelHandle, isChatModel }  = getModelHandle(provider);
             if (question) {
-                await fetchCompletion(document, document.getText(), cleanedQuestion, change.range.start, modelHandle, includes);
+                await fetchCompletion(document, document.getText(), cleanedQuestion, change.range.start, modelHandle, isChatModel, includes);
             }
         }
         // Check for multi-line comment closure
@@ -78,16 +72,11 @@ export function activate(context: vscode.ExtensionContext) {
                 const question = extractQuestionFromMultiLine(document, startLine, change.range.start.line, patterns.multiLineStart, patterns.multiLineEnd);
                 if (question) {
                     const { keyValuePairs, cleanedComment: cleanedQuestion } = extractKeyValuePairsAndCleanComment(question);
-
                     const provider = keyValuePairs['provider'] as string;
-                    const modelName = keyValuePairs['model'] as string;
                     const includes = keyValuePairs['include'] as string[];
-                    let modelHandle;
-                    if (provider || modelName) {
-                        modelHandle = getModelHandle(provider, modelName);
-                    }
+                    const { modelHandle, isChatModel }  = getModelHandle(provider);
                     if (cleanedQuestion) {
-                        await fetchCompletion(document, document.getText(), cleanedQuestion, change.range.start, modelHandle, includes);
+                        await fetchCompletion(document, document.getText(), cleanedQuestion, change.range.start, modelHandle, isChatModel, includes);
                     }
                 }
             }
@@ -98,7 +87,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 // @! wrap function fetchCompletion in withProgress. Provide clean code only. provider=anthropic
 
-async function fetchCompletion(document: vscode.TextDocument, contextText: string, cleanedQuestion: string, position: vscode.Position, localModel?: any, includes?: string[]) {
+async function fetchCompletion(document: vscode.TextDocument, contextText: string, cleanedQuestion: string, position: vscode.Position, localModel: any, isChatModel: boolean, includes?: string[]) {
     return vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
         title: "Asking LLM...",
@@ -106,37 +95,36 @@ async function fetchCompletion(document: vscode.TextDocument, contextText: strin
     }, async (progress) => {
         try {
             const includesArray: string[] = typeof includes === 'string' ? [includes] : includes;
-            const includedFilesContent = await processIncludedFiles(includesArray);
-            const messages = [
-                {
-                    "role": "system",
-                    "content": `You are a coding assistant for developers. You are provided with the following inputs:
-                              1. Filename - Name of the file being edited, used to identify the programming language.
-                              2. Included Files - Content from other files specified by the user for additional information. These files provide additional context or code dependencies that you should consider while generating the response.
-                              3. Current Code - The code immediately preceding this request for context.
-                              4. Question - The question or help requested by the user related to the current code.
-                            Your task is to:
-                              1. Understand the user question.
-                              2. If the user has asked for README generation:
-                                - Return content in markdown format.
-                                - Provide clear, concise explanations or descriptions of the code, its purpose, and usage, describe any configuration options for usage.
-                              3. If the user has asked for code generation:
-                                - Detect the programming language from the file extension.
-                                - Return only the necessary code to address the user's request.
-                                - Return clean, executable code without comments, explanations, markdown, or any non-executable text.
-                                - Returned code MUST NOT be part of string representations.`
-                },
-                {
-                    "role": "user",
-                    "content": `FileName: ${vscode.workspace.asRelativePath(document.uri)}
-                            ${includedFilesContent ? `Included Files Content:\n${includedFilesContent}\n` : ''}
-                            Current-Code: ${contextText}
-                            Question: ${cleanedQuestion}`
+            
+            const  includedFilesContent = includesArray ? await processIncludedFiles(includesArray) : undefined;
+            
+            const fileName = vscode.workspace.asRelativePath(document.uri);
+
+                // Create the user message content
+            const userMessage = `
+            FileName: ${fileName}
+            ${includedFilesContent ? `Included Files Content:\n${includedFilesContent}\n` : ""}
+            Current-Code: ${contextText}
+            Question: ${cleanedQuestion}
+            `;
+            const messages = isChatModel ? chatPromptGenerator(userMessage, 'code') : 
+                        promptGenerator(userMessage, 'code');
+            
+            const response = await localModel.invoke(messages);
+            let parsedResponse: any;
+            let completionText: string;
+            try {
+                parsedResponse = JSON.parse(response.content);
+                if (parsedResponse.type === "README" && parsedResponse.content) {
+                    completionText = parsedResponse.content;
+                } else if (parsedResponse.type === "code" && parsedResponse.code) {
+                    completionText = parsedResponse.code;
+                } else {
+                    vscode.window.showErrorMessage(`Incorrect response JSON: ${parsedResponse}`);
                 }
-            ];
-            const modelToUse = localModel || llmModel;
-            const response = await modelToUse.invoke(messages);
-            const completionText = response.content || '';
+            } catch (error) {
+                vscode.window.showErrorMessage(`Incorrect response format`);
+            }
             if (completionText) {
                 const edit = new vscode.WorkspaceEdit();
                 edit.insert(document.uri, position.translate(1, 0), `\n${completionText}`);

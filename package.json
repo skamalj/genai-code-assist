@@ -2,9 +2,9 @@
   "name": "copilot-supreme",
   "displayName": "Copilot Supreme",
   "description": "Code Copilot which allows you to choose your LLM across multiple providers",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "publisher": "skamalj",
-  "icon": "images/icon.jpg",
+  "icon": "images/icon-c.png",
   "repository": "https://github.com/skamalj/genai-code-assist.git",
   "engines": {
     "vscode": "^1.93.0"
@@ -18,12 +18,17 @@
     "commands": [
       {
         "command": "copilotSupreme.activate",
-        "title": "Activate Supreme",
+        "title": "Copilot Supreme: Activate",
         "category": "Copilot Supreme"
       },
       {
         "command": "copilotSupreme.explainCode",
-        "title": "Explain Code",
+        "title": "Copilot Supreme: Explain Code",
+        "category": "Copilot Supreme"
+      },
+      {
+        "command": "copilotSupreme.reviewCode",
+        "title": "Copilot Supreme: Review Code",
         "category": "Copilot Supreme"
       }
     ],
@@ -36,6 +41,11 @@
         },
         {
           "command": "copilotSupreme.explainCode",
+          "when": "editorTextFocus",
+          "group": "navigation"
+        },
+        {
+          "command": "copilotSupreme.reviewCode",
           "when": "editorTextFocus",
           "group": "navigation"
         }

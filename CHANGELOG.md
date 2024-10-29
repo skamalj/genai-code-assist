@@ -4,6 +4,11 @@ All notable changes to the "openai-code-ext" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.6]
+
+- Code Review
+    - Run __review code__ from context menu to generate code review of active file.
+
 ## [0.5]
 
 - Code explanation

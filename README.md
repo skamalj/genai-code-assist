@@ -10,6 +10,7 @@ This VSCode extension provides AI-assisted code suggestions based on user commen
 - **Multi-line Comment Handling:** Supports multi-line comments with customizable start and end tokens.
 - **Provider and Model Overriding:** Users can specify a different AI provider or model by including `provider=` and `model=` in their comments.
 - **Include File Content in Queries:** Users can reference and include content from other files in their queries, useful for test cases creation ot code conversion or creating Readme -- See Ex. below.
+- **Explain and Review Code:**  Users can review the code in current active file or select a piece of code to get explanation.
 - **Bonus** This provides a pay-as-you-go option, rather than monthly payments for various copilots.
 
 ## Usage
@@ -37,19 +38,22 @@ This VSCode extension provides AI-assisted code suggestions based on user commen
      // @! Write test cases for this function include=utils.js
      ```
 4. **Explain Code:**
-   - Select the code and run __explain code__ command from context menu. Explanation is shopwn in side wondow. This uses default provider configured for extension.
+   - Select the code and run __explain code__ command from context menu. Explanation is shown in side window. This uses default provider configured for extension.
+
+5. **Review Code:**
+   - Run __review code__ command from context menu. Review is shown in side window. This uses default provider configured for extension.
 
 
-5. **AI Interaction:**
+6. **AI Interaction:**
    - The extension captures the question, appends the code prior to the comment as context, and retrieves a code suggestion from the AI model.
 
-6. **Updating Suggestions:**
+7. **Updating Suggestions:**
    - After modifying a comment, press Enter at the last line to request a new code suggestion.
 
-7. **Customizing Provider and Model:**
-   - Override the default AI provider and model by specifying them in your comment, like so:
+8. **Customizing Provider:**
+   - Override the default AI provider by specifying them in your comment, like so:
      ```javascript
-     // @! Your question provider=yourProvider model=yourModel
+     // @! Your question provider=yourProvider
      ```
 
 ### Example Use Case: Creating Test Cases with the Include Feature or Convert to another language

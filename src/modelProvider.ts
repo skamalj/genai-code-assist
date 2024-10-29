@@ -38,8 +38,12 @@ interface AnthropicModelConfig extends BaseModelConfig {
   model: string; 
 }
 
+interface ModelResult {
+  modelHandle: ChatOpenAI | AzureChatOpenAI | ChatBedrockConverse | ChatGoogleGenerativeAI | ChatAnthropic;
+  isChatModel: boolean;
+}
 
-export function getModelHandle(providerOverride?: string, modelNameOverride?: string): ChatOpenAI | AzureChatOpenAI | ChatBedrockConverse | ChatGoogleGenerativeAI | ChatAnthropic {
+export function getModelHandle(providerOverride?: string, modelNameOverride?: string): ModelResult {
   const config = vscode.workspace.getConfiguration('genai.assistant');
 
   // Use the provider from the arguments, or fall back to the config
@@ -47,6 +51,7 @@ export function getModelHandle(providerOverride?: string, modelNameOverride?: st
 
   // Common config
   const temperature = Number(config.get<string>('temperature', '0.5'));
+  const isChatModel = config.get<boolean>(`${provider}.isChatModel`, true);
 
   try {
     switch (provider) {
@@ -57,7 +62,8 @@ export function getModelHandle(providerOverride?: string, modelNameOverride?: st
           openAIApiKey: process.env.OPENAI_API_KEY?.trim() || config.get<string>('openai.apiKey').trim() || '',
           modelName: modelNameOverride || config.get<string>('openai.modelName').trim(),
         };
-        return new ChatOpenAI(openaiConfig);
+        const modelHandle = new ChatOpenAI(openaiConfig);
+        return {modelHandle, isChatModel};
       }
       case 'azure': {
         vscode.window.showInformationMessage(`Creating model for provider ${provider}`);
@@ -69,7 +75,8 @@ export function getModelHandle(providerOverride?: string, modelNameOverride?: st
           azureOpenAIApiVersion: config.get<string>('azure.version').trim(),
           modelName: modelNameOverride || config.get<string>('azure.modelName').trim(),
         };
-        return new AzureChatOpenAI(azureConfig);
+        const modelHandle = new AzureChatOpenAI(azureConfig);
+        return {modelHandle, isChatModel};
       }
       case 'aws': {
         vscode.window.showInformationMessage(`Creating model for provider ${provider}`);
@@ -79,7 +86,8 @@ export function getModelHandle(providerOverride?: string, modelNameOverride?: st
           region: config.get<string>('aws.region').trim(),
           profile: config.get<string>('aws.profile').trim()
         };
-        return new ChatBedrockConverse(awsConfig);
+        const modelHandle = new ChatBedrockConverse(awsConfig);
+        return {modelHandle, isChatModel};
       }
       case 'google': {
         vscode.window.showInformationMessage(`Creating model for provider ${provider}`);
@@ -88,7 +96,8 @@ export function getModelHandle(providerOverride?: string, modelNameOverride?: st
           model: modelNameOverride || config.get<string>('google.modelName').trim(),
           apiKey: process.env.GOOGLE_GENAI_API_KEY?.trim() || config.get<string>('google.apiKey').trim() || '',
         };
-        return new ChatGoogleGenerativeAI(googleConfig);
+        const modelHandle = new ChatGoogleGenerativeAI(googleConfig);
+        return {modelHandle, isChatModel};
       }
       case 'anthropic': {
         vscode.window.showInformationMessage(`Creating model for provider ${provider}`);
@@ -97,7 +106,8 @@ export function getModelHandle(providerOverride?: string, modelNameOverride?: st
           apiKey: process.env.ANTHROPIC_API_KEY?.trim() ||  config.get<string>('anthropic.apiKey').trim() || '',
           model: modelNameOverride || config.get<string>('anthropic.modelName').trim(),
         };
-        return new ChatAnthropic(anthropicConfig);
+        const modelHandle = new ChatAnthropic(anthropicConfig);
+        return {modelHandle, isChatModel};
       }
       default:
         throw new Error(`Unsupported provider: ${provider}`);
