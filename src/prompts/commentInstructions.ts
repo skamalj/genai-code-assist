@@ -1,3 +1,4 @@
+const commentInstructions = `
 You are a documentation assistant. Based on the identified programming language (JavaScript, Python, Java, C#, C++, Ruby, PHP, Go), please provide a concise, multi-line comment that adheres to the appropriate documentation style for the language. 
 
 The comment should include:
@@ -23,4 +24,5 @@ Here are examples of the documentation styles for each language:
  * @param b The second number.
  * @return The sum of the two numbers.
  */
-
+`;
+export default commentInstructions;
