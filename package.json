@@ -105,7 +105,7 @@
           "genai.assistant.openai.isChatModel": {
             "type": "boolean",
             "default": true,
-            "description": "Set to false if it is completion/instruct model"
+            "description": "Uncheck if it is completion/instruct model"
           }
         }
       },
@@ -139,7 +139,7 @@
           "genai.assistant.azure.isChatModel": {
             "type": "boolean",
             "default": true,
-            "description": "Set to false if it is completion/instruct model"
+            "description": "Uncheck if it is completion/instruct model"
           }
         }
       },
@@ -165,7 +165,7 @@
           "genai.assistant.aws.isChatModel": {
             "type": "boolean",
             "default": true,
-            "description": "Set to false if it is completion/instruct model"
+            "description": "Uncheck if it is completion/instruct model"
           }
         }
       },
@@ -186,7 +186,7 @@
           "genai.assistant.google.isChatModel": {
             "type": "boolean",
             "default": true,
-            "description": "Set to false if it is completion/instruct model"
+            "description": "Uncheck if it is completion/instruct model"
           }
         }
       },
@@ -207,7 +207,7 @@
           "genai.assistant.anthropic.isChatModel": {
             "type": "boolean",
             "default": true,
-            "description": "Set to false if it is completion/instruct model"
+            "description": "Uncheck if it is completion/instruct model"
           }
         }
       },
