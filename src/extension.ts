@@ -2,16 +2,11 @@ import * as vscode from 'vscode';
 import { getModelHandle } from './modelProvider.js';
 import { explainCode } from './explainCode';
 import { reviewCode } from './reviewCode.js';
+import { addComment } from './commentCreator.js';
 import { extractKeyValuePairsAndCleanComment, processIncludedFiles, getCommentPatterns, identifyProgrammingLanguage, collectConsecutiveComments, extractQuestionFromMultiLine, findStartOfMultiLineComment } from './utils.js';
 import { chatPromptGenerator, promptGenerator } from './promptBuilder.js';
 
 export function activate(context: vscode.ExtensionContext) {
-
-    // Register the "Copilot Supreme: Activate" command
-    let activateCommand = vscode.commands.registerCommand('copilotSupreme.activate', function () {
-        vscode.window.showInformationMessage('Copilot Supreme Activated!');
-    });
-    context.subscriptions.push(activateCommand);
 
     let explainCommand = vscode.commands.registerCommand('copilotSupreme.explainCode', function () {
         const editor = vscode.window.activeTextEditor;
@@ -25,6 +20,19 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     context.subscriptions.push(explainCommand);
+
+    let commentCommand = vscode.commands.registerCommand('copilotSupreme.addComment', function () {
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            const selection = editor.selection;
+            const selectedText = editor.document.getText(selection);
+
+            // Call the function from explainCode.js
+            addComment(selectedText);
+        }
+    });
+
+    context.subscriptions.push(commentCommand);
 
     let reviewCommand = vscode.commands.registerCommand('copilotSupreme.reviewCode', reviewCode);
     context.subscriptions.push(reviewCommand);

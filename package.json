@@ -12,42 +12,50 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": ["onStartupFinished"],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
+    "submenus": [
+      {
+        "id": "copilotsupreme.menu",
+        "label": "Copilot Supreme"
+      }
+    ],
     "commands": [
       {
-        "command": "copilotSupreme.activate",
-        "title": "Copilot Supreme: Activate",
-        "category": "Copilot Supreme"
-      },
-      {
         "command": "copilotSupreme.explainCode",
-        "title": "Copilot Supreme: Explain Code",
-        "category": "Copilot Supreme"
+        "title": "Explain Code"
       },
       {
         "command": "copilotSupreme.reviewCode",
-        "title": "Copilot Supreme: Review Code",
-        "category": "Copilot Supreme"
+        "title": "Review Code"
+      },
+      {
+        "command": "copilotSupreme.addComment",
+        "title": "Add Comment"
       }
     ],
     "menus": {
       "editor/context": [
         {
-          "command": "copilotSupreme.activate",
-          "when": "editorTextFocus",
-          "group": "navigation"
+          "submenu": "copilotsupreme.menu",
+          "group": "copilotsupreme"
+        }
+      ],
+      "copilotsupreme.menu": [
+        {
+          "command": "copilotSupreme.reviewCode",
+          "when": "editorTextFocus"
         },
         {
           "command": "copilotSupreme.explainCode",
-          "when": "editorTextFocus",
-          "group": "navigation"
+          "when": "editorHasSelection"
         },
         {
-          "command": "copilotSupreme.reviewCode",
-          "when": "editorTextFocus",
-          "group": "navigation"
+          "command": "copilotSupreme.addComment",
+          "when": "editorHasSelection"
         }
       ]
     },
@@ -93,6 +101,11 @@
             "type": "string",
             "default": "gpt-4",
             "description": "The LLM  model name (e.g., gpt-4)"
+          },
+          "genai.assistant.openai.isChatModel": {
+            "type": "boolean",
+            "default": true,
+            "description": "Set to false if it is completion/instruct model"
           }
         }
       },
@@ -122,6 +135,11 @@
             "type": "string",
             "default": "gpt-35-turbo",
             "description": "The LLM  model name (e.g., gpt-35-turbo)"
+          },
+          "genai.assistant.azure.isChatModel": {
+            "type": "boolean",
+            "default": true,
+            "description": "Set to false if it is completion/instruct model"
           }
         }
       },
@@ -143,6 +161,11 @@
             "type": "string",
             "default": "gpt-3.5-turbo",
             "description": "The LLM  model name (e.g., gpt-3.5-turbo)"
+          },
+          "genai.assistant.aws.isChatModel": {
+            "type": "boolean",
+            "default": true,
+            "description": "Set to false if it is completion/instruct model"
           }
         }
       },
@@ -159,6 +182,11 @@
             "type": "string",
             "default": "gemini-1.5-flash-latest",
             "description": "The LLM  model name (e.g., gemini-1.5-flash-latest)"
+          },
+          "genai.assistant.google.isChatModel": {
+            "type": "boolean",
+            "default": true,
+            "description": "Set to false if it is completion/instruct model"
           }
         }
       },
@@ -175,6 +203,11 @@
             "type": "string",
             "default": "claude-3-5-sonnet-20240620",
             "description": "The LLM  model name (e.g., claude-3-5-sonnet-20240620)"
+          },
+          "genai.assistant.anthropic.isChatModel": {
+            "type": "boolean",
+            "default": true,
+            "description": "Set to false if it is completion/instruct model"
           }
         }
       },

@@ -15,14 +15,7 @@ This VSCode extension provides AI-assisted code suggestions based on user commen
 
 ## Usage
 
-1. **Activate the Extension:**
-   - After installing the extension, you can activate it manually by running the command (Optional, this is place holder for future):
-     ```
-     Copilot Supreme: Activate
-     ```
-     You can access this command either from the command palette (`Ctrl+Shift+P`) or by right-clicking inside the editor window and selecting **"Copilot Supreme: Activate"** from the context menu.
-
-2. **Code Generation:**
+1. **Code Generation:**
    - For single-line comments: Use the format `// @! Your question` (or any single-line comment format specific to your programming language).
    - For multi-line comments: Use the format (or `'''` for Python):
      ```javascript
@@ -32,17 +25,19 @@ This VSCode extension provides AI-assisted code suggestions based on user commen
      ```
    - Extension understands comment format for - js, ts, java, csharp, python and rust. For other languages it uses default of "//" for singleline and /* */ for multiline. These can be overriden in settings
 
-3. **Include External Files in AI Query (New Feature):**
+2. **Include External Files in AI Query (New Feature):**
    - You can now reference and include content from other files in your AI query by using the `include=<file>` directive. This is particularly useful when you want the AI to consider code from multiple files, such as including the definition of functions or creating __test cases__ or __Readme__ based on file contents.
      ```javascript
      // @! Write test cases for this function include=utils.js
      ```
-4. **Explain Code:**
+3. **Explain Code:**
    - Select the code and run __explain code__ command from context menu. Explanation is shown in side window. This uses default provider configured for extension.
 
-5. **Review Code:**
+4. **Review Code:**
    - Run __review code__ command from context menu. Review is shown in side window. This uses default provider configured for extension.
 
+5. **Add Comment:**
+   - Run __add comment__ command from context menu. Comment is added at top of selected code. This uses default provider configured for extension.
 
 6. **AI Interaction:**
    - The extension captures the question, appends the code prior to the comment as context, and retrieves a code suggestion from the AI model.

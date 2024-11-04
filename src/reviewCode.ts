@@ -62,14 +62,15 @@ function getWebviewContent(review: string): string {
             <meta name="viewport" content="width=device-width, initial-scale=0.5">
             <title>Code Review</title>
             <style>
-                body { font-family: Arial, sans-serif; line-height: 1.5; margin: 20px; }
-                h1 { font-size: 24px; margin-bottom: 20px; }
-                pre { white-space: pre-wrap; word-wrap: break-word; }
+                body { line-height: 1.0; margin: 10px; padding: 10px;}
+                h1 { font-size: 24px; margin-bottom: 10px; }
+                code {background-color: transparent;  }
+                pre { white-space: pre-wrap;  word-wrap: break-word; background-color: transparent; border-radius: 5px; border: solid 1px;}
             </style>
         </head>
         <body>
             <h1>Code Review</h1>
-            <pre>${review}</pre>
+            ${review}
         </body>
         </html>
     `;
