@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { getModelHandle } from './modelProvider.js';
 import { chatPromptGenerator, promptGenerator } from './promptBuilder.js';
+import { logMessage } from './outputChannel.js';
 
 
 // Function to call OpenAI and display explanation in a webview panel
@@ -11,6 +12,7 @@ export async function explainCode(selectedText: string | undefined): Promise<voi
     }
 
     const explanation = await callOpenAIForExplanation(selectedText);
+    const cleanedExplanation = explanation.replace(/```[\w]*\n?|```/g, '').trim();
 
     // Display the explanation in a webview panel
     const panel = vscode.window.createWebviewPanel(
@@ -20,7 +22,7 @@ export async function explainCode(selectedText: string | undefined): Promise<voi
         {}                    // Webview options
     );
 
-    panel.webview.html = getWebviewContent(explanation);
+    panel.webview.html = getWebviewContent(cleanedExplanation);
 }
 
 // Function to call OpenAI API
@@ -29,7 +31,7 @@ async function callOpenAIForExplanation(selectedText: string) {
     const document = editor.document;
     return vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
-        title: "Asking LLM...",
+        title: "Requesting Explanation...",
         cancellable: false
     }, async (progress) => {
         try {
@@ -46,7 +48,8 @@ async function callOpenAIForExplanation(selectedText: string) {
             const completionText = response.content || '';
             return completionText as string;
         } catch (error) {
-            vscode.window.showErrorMessage(`Failed to fetch completion: ${error}`);
+            vscode.window.showErrorMessage(`Failed to fetch explanation`);
+            logMessage(`Failed to fetch explanation: ${error}`);
         }
     });
 }

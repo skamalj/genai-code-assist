@@ -4,6 +4,13 @@ All notable changes to the "openai-code-ext" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.8]
+
+- Debug flag added
+    - When enabled, displays messages in output pane
+
+- Chat and Instruct/Completion models supported
+
 ## [0.7]
 
 - Add Comment

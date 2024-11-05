@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { getModelHandle } from './modelProvider.js';
 import { chatPromptGenerator, promptGenerator } from './promptBuilder.js';
+import { logMessage } from './outputChannel.js';
 
 // Function to create a comment above the selected code
 export async function addComment(selectedText: string | undefined): Promise<void> {
@@ -10,13 +11,14 @@ export async function addComment(selectedText: string | undefined): Promise<void
     }
 
     const comment = await generateCommentForCode(selectedText);
+    const cleanedComment = comment.replace(/```[\w]*\n?|```/g, '').trim();
 
     if (comment) {
         const editor = vscode.window.activeTextEditor;
         if (editor) {
             const selection = editor.selection;
             const position = selection.start;
-            const commentText = `${comment}\n`;
+            const commentText = `${cleanedComment }\n`;
 
             await editor.edit(editBuilder => {
                 editBuilder.insert(position, commentText);
@@ -51,7 +53,8 @@ async function generateCommentForCode(selectedText: string): Promise<string | un
             const commentText = response.content || '';
             return commentText as string;
         } catch (error) {
-            vscode.window.showErrorMessage(`Failed to generate comment: ${error}`);
+            vscode.window.showErrorMessage(`Failed to generate comment`);
+            logMessage(`Failed to generate comment: ${error}`);
         }
     });
 }

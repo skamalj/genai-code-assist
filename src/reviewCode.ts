@@ -15,6 +15,7 @@ export async function reviewCode(): Promise<void> {
     const fileContent = document.getText();
 
     const review = await callOpenAIForReview(fileContent, document.fileName);
+    const cleanedReview = review.replace(/```[\w]*\n?|```/g, '').trim();
 
     // Display the review in a webview panel
     const panel = vscode.window.createWebviewPanel(
@@ -24,7 +25,7 @@ export async function reviewCode(): Promise<void> {
         {}                    // Webview options
     );
 
-    panel.webview.html = getWebviewContent(review);
+    panel.webview.html = getWebviewContent(cleanedReview);
 }
 
 // Function to call OpenAI API for code review
@@ -47,7 +48,7 @@ async function callOpenAIForReview(fileContent: string, fileName: string) {
             const completionText = response.content || '';
             return completionText as string;
         } catch (error) {
-            vscode.window.showErrorMessage(`Failed to fetch completion: ${error}`);
+            vscode.window.showErrorMessage(`Failed to review: ${error}`);
         }
     });
 }

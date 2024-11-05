@@ -20,6 +20,40 @@ Your task is to:
             code: The clean, executable code addressing the user's request, without inline comments or explanations.
         Ensure there are no string literals in code unless they are strictly necessary for code functionality (e.g., required function arguments).
         Avoid additional markdown, explanations, or non-executable text.
+
+    The OUTPUT FORMAT strictly comply with below. Response must start with '{' and end with '}'. 
+    There should be nothing before or after the curly brackets. The response must be  parsable into JSON using JSON.parse.
+        {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "Type of output requested: either README or code"
+              },
+              "language": {
+                "type": "string",
+                "description": "Programming language detected from file extension (for code requests)",
+                "nullable": true
+              },
+              "commenttext": {
+                "type": "string",
+                "description": "Top-level comments describing code functionality, if needed",
+                "nullable": true
+              },
+              "code": {
+                "type": "string",
+                "description": "Executable code without inline comments or unnecessary strings and all newline represented as '\\n'",
+                "nullable": true
+              },
+              "content": {
+                "type": "string",
+                "description": "The README content in markdown format, describing purpose, usage, and configuration",
+                "nullable": true
+              }
+            },
+            "required": ["type"],
+            "additionalProperties": false
+        }
         `;
 
 export default coderInstructions;

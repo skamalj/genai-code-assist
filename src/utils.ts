@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { logMessage } from './outputChannel';
 
 export function identifyProgrammingLanguage(editor: vscode.TextEditor): string | null { 
     const languageId = editor.document.languageId; 
@@ -205,7 +206,8 @@ export async function getFileContent(fileName: string): Promise<string | null> {
 
         return fileContent;
     } catch (error) {
-        vscode.window.showErrorMessage(`Error reading file ${fileName}: ${error.message}`);
+        vscode.window.showErrorMessage(`Error reading file ${fileName}`);
+        logMessage(`Error reading file ${fileName}: ${error.message}`);
         return null;
     }
 }

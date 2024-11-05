@@ -3,7 +3,7 @@ import { getModelHandle } from './modelProvider.js';
 import { explainCode } from './explainCode';
 import { reviewCode } from './reviewCode.js';
 import { addComment } from './commentCreator.js';
-import  unifiedSchema  from './llmResponseSchema';
+import { logMessage } from './outputChannel';
 import { extractKeyValuePairsAndCleanComment, processIncludedFiles, getCommentPatterns, identifyProgrammingLanguage, collectConsecutiveComments, extractQuestionFromMultiLine, findStartOfMultiLineComment } from './utils.js';
 import { chatPromptGenerator, promptGenerator } from './promptBuilder.js';
 
@@ -121,23 +121,24 @@ async function fetchCompletion(document: vscode.TextDocument, contextText: strin
             const messages = isChatModel ? chatPromptGenerator(userMessage, 'code') : 
                         promptGenerator(userMessage, 'code');
             
-            const parsedResponse = await localModel.withStructuredOutput(unifiedSchema).invoke(messages);
-            
+            const response = await localModel.invoke(messages);
+            const cleanedResponse = (response.content).replace(/```json|```/g, '').trim();
+            let parsedResponse;
             let completionText: string;
             try {
-                
+                parsedResponse = JSON.parse(cleanedResponse);
                 if (parsedResponse.type === "README" && parsedResponse.content) {
                     completionText = parsedResponse.content;
                 } else if (parsedResponse.type === "code" && parsedResponse.code) {
                     completionText = parsedResponse.code;
                 } else {
-                    vscode.window.showErrorMessage(`Incorrect response JSON: ${parsedResponse}`);
+                    vscode.window.showErrorMessage(`Incorrect response JSON`);
+                    logMessage(`LLM Response: ${response.content}`);
                 }
             } catch (error) {
                 vscode.window.showErrorMessage(`Incorrect response format`);
-                outputChannel.appendLine(`Error: ${error}`);
-                outputChannel.appendLine(`Response: ${JSON.stringify(parsedResponse)}`);
-                outputChannel.show();
+                logMessage(`Error: ${error}`);
+                logMessage(`LLM Response: ${response.content}`);
             }
             if (completionText) {
                 const edit = new vscode.WorkspaceEdit();
@@ -145,9 +146,8 @@ async function fetchCompletion(document: vscode.TextDocument, contextText: strin
                 await vscode.workspace.applyEdit(edit);
             }
         } catch (error) {
-            vscode.window.showErrorMessage(`Failed to fetch completion: ${error}`);
-            outputChannel.appendLine(`Error: ${error}`);
-            outputChannel.show();
+            vscode.window.showErrorMessage(`Failed to generate: ${error}`);
+            logMessage(`Error: ${error}`);
         }
     });
 }
