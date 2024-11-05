@@ -265,6 +265,7 @@
     "@smithy/eventstream-codec": "^2.2.0",
     "@smithy/protocol-http": "^3.3.0",
     "@smithy/signature-v4": "^2.3.0",
-    "@smithy/util-utf8": "^2.3.0"
+    "@smithy/util-utf8": "^2.3.0",
+    "zod": "^3.23.8"
   }
 }

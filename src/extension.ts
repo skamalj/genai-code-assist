@@ -3,8 +3,11 @@ import { getModelHandle } from './modelProvider.js';
 import { explainCode } from './explainCode';
 import { reviewCode } from './reviewCode.js';
 import { addComment } from './commentCreator.js';
+import  unifiedSchema  from './llmResponseSchema';
 import { extractKeyValuePairsAndCleanComment, processIncludedFiles, getCommentPatterns, identifyProgrammingLanguage, collectConsecutiveComments, extractQuestionFromMultiLine, findStartOfMultiLineComment } from './utils.js';
 import { chatPromptGenerator, promptGenerator } from './promptBuilder.js';
+
+const outputChannel = vscode.window.createOutputChannel('Copilot Supreme');  // Create output channel
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -118,11 +121,11 @@ async function fetchCompletion(document: vscode.TextDocument, contextText: strin
             const messages = isChatModel ? chatPromptGenerator(userMessage, 'code') : 
                         promptGenerator(userMessage, 'code');
             
-            const response = await localModel.invoke(messages);
-            let parsedResponse: any;
+            const parsedResponse = await localModel.withStructuredOutput(unifiedSchema).invoke(messages);
+            
             let completionText: string;
             try {
-                parsedResponse = JSON.parse(response.content);
+                
                 if (parsedResponse.type === "README" && parsedResponse.content) {
                     completionText = parsedResponse.content;
                 } else if (parsedResponse.type === "code" && parsedResponse.code) {
@@ -132,6 +135,9 @@ async function fetchCompletion(document: vscode.TextDocument, contextText: strin
                 }
             } catch (error) {
                 vscode.window.showErrorMessage(`Incorrect response format`);
+                outputChannel.appendLine(`Error: ${error}`);
+                outputChannel.appendLine(`Response: ${JSON.stringify(parsedResponse)}`);
+                outputChannel.show();
             }
             if (completionText) {
                 const edit = new vscode.WorkspaceEdit();
@@ -140,6 +146,8 @@ async function fetchCompletion(document: vscode.TextDocument, contextText: strin
             }
         } catch (error) {
             vscode.window.showErrorMessage(`Failed to fetch completion: ${error}`);
+            outputChannel.appendLine(`Error: ${error}`);
+            outputChannel.show();
         }
     });
 }
