@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { getModelHandle } from './modelProvider.js';
 import { chatPromptGenerator, promptGenerator } from './promptBuilder.js';
+import { logMessage } from './outputChannel.js';
 
 // Function to call OpenAI and display code review in a webview panel
 export async function reviewCode(): Promise<void> {
@@ -44,11 +45,13 @@ async function callOpenAIForReview(fileContent: string, fileName: string) {
             const messages = isChatModel ? chatPromptGenerator(userMessage, 'review') : 
                         promptGenerator(userMessage, 'review');
 
-            const response = await modelHandle.invoke(messages);
+            const timeout = vscode.workspace.getConfiguration('genai.assistant').get<number>('timeout');
+            const response = await modelHandle.invoke(messages, { timeout: timeout*1000 });
             const completionText = response.content || '';
             return completionText as string;
         } catch (error) {
-            vscode.window.showErrorMessage(`Failed to review: ${error}`);
+            vscode.window.showErrorMessage(`Failed to review`);
+            logMessage(`Failed to review: ${error}`);
         }
     });
 }

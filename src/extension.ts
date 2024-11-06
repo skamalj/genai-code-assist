@@ -121,7 +121,8 @@ async function fetchCompletion(document: vscode.TextDocument, contextText: strin
             const messages = isChatModel ? chatPromptGenerator(userMessage, 'code') : 
                         promptGenerator(userMessage, 'code');
             
-            const response = await localModel.invoke(messages);
+            const timeout = vscode.workspace.getConfiguration('genai.assistant').get<number>('timeout');
+            const response = await localModel.invoke(messages, {timeout: timeout*1000});
             const cleanedResponse = (response.content).replace(/```json|```/g, '').trim();
             let parsedResponse;
             let completionText: string;

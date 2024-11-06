@@ -44,7 +44,8 @@ async function callOpenAIForExplanation(selectedText: string) {
             const messages = isChatModel ? chatPromptGenerator(userMessage, 'explain') : 
                         promptGenerator(userMessage, 'explain');
 
-            const response = await modelHandle.invoke(messages);
+            const timeout = vscode.workspace.getConfiguration('genai.assistant').get<number>('timeout');
+            const response = await modelHandle.invoke(messages, {timeout: timeout*1000});
             const completionText = response.content || '';
             return completionText as string;
         } catch (error) {
@@ -61,12 +62,18 @@ function getWebviewContent(explanation: string): string {
         <html lang="en">
         <head>
             <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Code Explanation</title>
+            <meta name="viewport" content="width=device-width, initial-scale=0.5">
+            <title>Explanation</title>
+            <style>
+                body { line-height: 1.0; margin: 10px; padding: 10px;}
+                h1 { font-size: 24px; margin-bottom: 10px; }
+                code {background-color: transparent;  }
+                pre { white-space: pre-wrap;  word-wrap: break-word; background-color: transparent; border-radius: 5px; border: solid 1px;}
+            </style>
         </head>
         <body>
             <h1>Explanation</h1>
-            <pre>${explanation}</pre>
+            ${explanation}
         </body>
         </html>
     `;
