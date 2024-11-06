@@ -13,11 +13,13 @@ export function logMessage(message: string): void {
 }
 
 // Listen for changes to the debug setting
-vscode.workspace.onDidChangeConfiguration((event) => {
-    if (event.affectsConfiguration('copilotSupreme.enableDebug')) {
-        debugEnabled = vscode.workspace.getConfiguration('genai.assistant').get<boolean>('enableDebug', false);
-    }
-});
+export function initializeConfigurationListener() {
+    vscode.workspace.onDidChangeConfiguration((event) => {
+        if (event.affectsConfiguration('genai.assistant.enableDebug')) {
+            debugEnabled = vscode.workspace.getConfiguration('genai.assistant').get<boolean>('enableDebug', false);
+        }
+    });
+}
 
 // Export the output channel for direct access
 export { outputChannel };

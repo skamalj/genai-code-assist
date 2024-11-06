@@ -4,6 +4,7 @@ import { ChatBedrockConverse } from "@langchain/aws";
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import { ChatAnthropic } from '@langchain/anthropic';
 import * as vscode from 'vscode';
+import { logMessage } from "./outputChannel";
 
 interface BaseModelConfig {
   temperature: number;
@@ -54,9 +55,9 @@ export function getModelHandle(providerOverride?: string, modelNameOverride?: st
   const isChatModel = config.get<boolean>(`${provider}.isChatModel`, true);
 
   try {
+    logMessage(`Creating model for provider ${provider}`);
     switch (provider) {
       case 'openai': {
-        vscode.window.showInformationMessage(`Creating model for provider ${provider}`);
         const openaiConfig: OpenAIModelConfig = {
           temperature,
           openAIApiKey: process.env.OPENAI_API_KEY?.trim() || config.get<string>('openai.apiKey').trim() || '',
@@ -66,7 +67,6 @@ export function getModelHandle(providerOverride?: string, modelNameOverride?: st
         return {modelHandle, isChatModel};
       }
       case 'azure': {
-        vscode.window.showInformationMessage(`Creating model for provider ${provider}`);
         const azureConfig: AzureModelConfig = {
           temperature,
           azureOpenAIApiKey: process.env.AZURE_API_KEY?.trim() || config.get<string>('azure.apiKey').trim() || '',
@@ -79,7 +79,6 @@ export function getModelHandle(providerOverride?: string, modelNameOverride?: st
         return {modelHandle, isChatModel};
       }
       case 'aws': {
-        vscode.window.showInformationMessage(`Creating model for provider ${provider}`);
         const awsConfig: AWSModelConfig = {
           temperature,
           model: modelNameOverride || config.get<string>('aws.modelName').trim(),
@@ -90,7 +89,6 @@ export function getModelHandle(providerOverride?: string, modelNameOverride?: st
         return {modelHandle, isChatModel};
       }
       case 'google': {
-        vscode.window.showInformationMessage(`Creating model for provider ${provider}`);
         const googleConfig: GoogleModelConfig = {
           temperature,
           model: modelNameOverride || config.get<string>('google.modelName').trim(),
@@ -100,7 +98,6 @@ export function getModelHandle(providerOverride?: string, modelNameOverride?: st
         return {modelHandle, isChatModel};
       }
       case 'anthropic': {
-        vscode.window.showInformationMessage(`Creating model for provider ${provider}`);
         const anthropicConfig: AnthropicModelConfig = {
           temperature,
           apiKey: process.env.ANTHROPIC_API_KEY?.trim() ||  config.get<string>('anthropic.apiKey').trim() || '',
@@ -113,7 +110,8 @@ export function getModelHandle(providerOverride?: string, modelNameOverride?: st
         throw new Error(`Unsupported provider: ${provider}`);
     }
   } catch (error) {
-    vscode.window.showErrorMessage(`Error initializing model for provider "${provider}": ${error.message}`);
+    vscode.window.showErrorMessage(`Error initializing model for provider: ${provider}`);
+    logMessage(`Error initializing model for provider "${provider}": ${error.message}`);
     throw error;
   }
 }

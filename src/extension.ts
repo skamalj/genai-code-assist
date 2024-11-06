@@ -3,7 +3,7 @@ import { getModelHandle } from './modelProvider.js';
 import { explainCode } from './explainCode';
 import { reviewCode } from './reviewCode.js';
 import { addComment } from './commentCreator.js';
-import { logMessage } from './outputChannel';
+import { logMessage, initializeConfigurationListener } from './outputChannel';
 import { extractKeyValuePairsAndCleanComment, processIncludedFiles, getCommentPatterns, identifyProgrammingLanguage, collectConsecutiveComments, extractQuestionFromMultiLine, findStartOfMultiLineComment } from './utils.js';
 import { chatPromptGenerator, promptGenerator } from './promptBuilder.js';
 
@@ -93,6 +93,7 @@ export function activate(context: vscode.ExtensionContext) {
             }
         }
     });
+    initializeConfigurationListener();
     vscode.window.showInformationMessage('Copilot Supreme Activated');
 }
 
