@@ -2,7 +2,7 @@
   "name": "copilot-supreme",
   "displayName": "Copilot Supreme",
   "description": "Code Copilot which allows you to choose your LLM across multiple providers",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "publisher": "skamalj",
   "icon": "images/icon-c.png",
   "repository": "https://github.com/skamalj/genai-code-assist.git",
@@ -82,13 +82,13 @@
             "description": "LLM temperature"
           },
           "genai.assistant.timeout": {
-            "type": "string",
-            "default": "10",
-            "description": "LLM api timeout"
+            "type": "integer",
+            "default": 120,
+            "description": "LLM api timeout in secs"
           },
           "genai.assistant.enableDebug": {
             "type": "boolean",
-            "default": "false",
+            "default": false,
             "description": "Enable debug mode for Copilot Supreme."
           }
         }

@@ -57,16 +57,22 @@ async function callOpenAIForExplanation(selectedText: string) {
 // Function to return HTML content for the webview
 function getWebviewContent(explanation: string): string {
     return `
-        <!DOCTYPE html>
+               <!DOCTYPE html>
         <html lang="en">
         <head>
             <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Code Explanation</title>
+            <meta name="viewport" content="width=device-width, initial-scale=0.5">
+            <title>Code Review</title>
+            <style>
+                body { line-height: 1.0; margin: 10px; padding: 10px;}
+                h1 { font-size: 24px; margin-bottom: 10px; }
+                code {background-color: transparent;  }
+                pre { white-space: pre-wrap;  word-wrap: break-word; background-color: transparent; border-radius: 5px; border: solid 1px;}
+            </style>
         </head>
         <body>
-            <h1>Explanation</h1>
-            <pre>${explanation}</pre>
+            <h1>Code Review</h1>
+            ${explanation}
         </body>
         </html>
     `;
