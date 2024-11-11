@@ -62,7 +62,7 @@ function getWebviewContent(explanation: string): string {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=0.5">
-            <title>Code Review</title>
+            <title>Explanation</title>
             <style>
                 body { line-height: 1.0; margin: 10px; padding: 10px;}
                 h1 { font-size: 24px; margin-bottom: 10px; }
@@ -71,7 +71,7 @@ function getWebviewContent(explanation: string): string {
             </style>
         </head>
         <body>
-            <h1>Code Review</h1>
+            <h1>Explanation</h1>
             ${explanation}
         </body>
         </html>

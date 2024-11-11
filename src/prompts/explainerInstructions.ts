@@ -6,7 +6,7 @@ You are a coding assistant for developers. You are provided with the following i
 
 Your task is to:
         1. Provide a detailed explanation of the selected code.
-        2. Format the explanation text normally, but any code snippets should be wrapped in <code> tags, and larger blocks of code should be wrapped in <pre><code> tags.
+        2. Return your response in HTML format, but any code snippets should be wrapped in <code> tags, and larger blocks of code should be wrapped in <pre><code> tags.
         3. Ensure that the code is separated clearly from the text to improve readability.
 `;
 export default explainerInstructions;
