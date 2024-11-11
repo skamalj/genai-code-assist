@@ -8,7 +8,7 @@ This VSCode extension provides AI-assisted code suggestions based on user commen
 - **Language Support:** Any language you can use in VSCode.
 - **AI Suggestions:** Fetches code suggestions based on user-defined questions in comments.
 - **Multi-line Comment Handling:** Supports multi-line comments with customizable start and end tokens.
-- **Provider and Model Overriding:** Users can specify a different AI provider or model by including `provider=` and `model=` in their comments.
+- **Provider Overriding:** Users can specify a different AI provider by including `provider=` in comments.
 - **Include File Content in Queries:** Users can reference and include content from other files in their queries, useful for test cases creation ot code conversion or creating Readme -- See Ex. below.
 - **Explain and Review Code:**  Users can review the code in current active file or select a piece of code to get explanation.
 - **Bonus** This provides a pay-as-you-go option, rather than monthly payments for various copilots.
@@ -77,7 +77,7 @@ The extension provides a variety of configuration options that can be set either
 |-------------------------------------|--------|---------|-------------------------------------------|
 | `genai.assistant.provider`          | string | openai  | Select the AI provider you want to use. Possible values: `openai`, `aws`, `azure`, `google`, `anthropic`. |
 | `genai.assistant.temperature`       | string | 0       | LLM temperature to control creativity of responses. |
-| `genai.assistant.timeout`           | string | 10      | Timeout value for LLM API calls (in seconds). |
+| `genai.assistant.timeout`           | string | 120      | Timeout value for LLM API calls (in seconds). |
 
 ### OpenAI Settings
 
