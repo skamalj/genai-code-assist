@@ -12,18 +12,30 @@ export async function addComment(selectedText: string | undefined): Promise<void
 
     const comment = await generateCommentForCode(selectedText);
     const cleanedComment = comment.replace(/```[\w]*\n?|```/g, '').trim();
+    let parsedComment;
+    try {
+        parsedComment = JSON.parse(cleanedComment); 
+    } catch (error){
+        vscode.window.showErrorMessage(`Incorrect response format for Comment`);
+        logMessage(`Incorrect response format for Comment: ${cleanedComment}`);
+        return;
+    }
 
-    if (comment) {
+    if (parsedComment.commentText) {
         const editor = vscode.window.activeTextEditor;
         if (editor) {
             const selection = editor.selection;
             const position = selection.start;
-            const commentText = `${cleanedComment }\n`;
+            const commentText = `${parsedComment.commentText }\n`;
 
             await editor.edit(editBuilder => {
                 editBuilder.insert(position, commentText);
             });
         }
+    } else {
+        vscode.window.showErrorMessage(`Incorrect response JSON for Comment`);
+        logMessage(`Incorrect response JSON for Comment: ${JSON.stringify(parsedComment)}`);
+        return;
     }
 }
 
